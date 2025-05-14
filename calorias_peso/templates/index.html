@@ -2,71 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Selector de elementos</title>
+    <title>Calculadora de Combinaciones</title>
+    <!-- Enlace a Bootstrap CSS para estilos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="container py-4">
-    <h2>Selector de elementos por calorías y peso</h2>
-
-    <form method="post">
-        {% csrf_token %}
-        <div class="mb-2">
-            <label>Calorías mínimas:</label>
-            <input type="number" name="min_calorias" min="0" class="form-control" required>
-        </div>
-        <div class="mb-2">
-            <label>Peso máximo:</label>
-            <input type="number" name="max_peso" class="form-control" required>
-        </div>
-
-        <h5>Elementos</h5>
-        <div id="elementos">
-            <div class="row mb-2">
-                <div class="col">
-                    <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
-                </div>
-                <div class="col">
-                    <input type="number" name="peso" class="form-control" placeholder="Peso" required>
-                </div>
-                <div class="col">
-                    <input type="number" name="calorias" class="form-control" placeholder="Calorías" required>
-                </div>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-sm btn-secondary mb-3" onclick="agregarElemento()">Agregar otro</button>
-        <br>
-        <button type="submit" class="btn btn-sm btn-primary">Calcular</button>
-    </form>
-
-    {% if resultado %}
-        <hr>
-        <h5>Mejor combinación encontrada:</h5>
-        <ul>
-            {% for e in resultado %}
-                <li>{{ e.nombre }} - Peso: {{ e.peso }}, Calorías: {{ e.calorias }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
+    <!-- Script para agregar elementos dinámicamente -->
     <script>
         function agregarElemento() {
             const contenedor = document.getElementById('elementos');
             const fila = document.createElement('div');
-            fila.className = 'row mb-2';
+            fila.className = 'row mb-3';
             fila.innerHTML = `
                 <div class="col">
                     <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
                 </div>
                 <div class="col">
-                    <input type="number" name="peso" class="form-control" placeholder="Peso" required>
+                    <input type="number" name="peso" class="form-control" placeholder="Peso" min="0" required>
                 </div>
                 <div class="col">
-                    <input type="number" name="calorias" class="form-control" placeholder="Calorías" required>
+                    <input type="number" name="calorias" class="form-control" placeholder="Calorías" min="0" required>
                 </div>
             `;
             contenedor.appendChild(fila);
         }
     </script>
+</head>
+<body class="container py-4">
+    <h1 class="mb-4">Calculadora de Combinaciones</h1>
+
+    <!-- Mostrar mensajes de error -->
+    {% if errores %}
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                {% for error in errores %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="min_calorias" class="form-label">Calorías mínimas:</label>
+            <input type="number" name="min_calorias" id="min_calorias" class="form-control" min="0" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="max_peso" class="form-label">Peso máximo:</label>
+            <input type="number" name="max_peso" id="max_peso" class="form-control" min="0" required>
+        </div>
+
+        <div id="elementos">
+            <div class="row mb-3">
+                <div class="col">
+                    <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
+                </div>
+                <div class="col">
+                    <input type="number" name="peso" class="form-control" placeholder="Peso" min="0" required>
+                </div>
+                <div class="col">
+                    <input type="number" name="calorias" class="form-control" placeholder="Calorías" min="0" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3" onclick="agregarElemento()">Agregar otro producto</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Calcular</button>
+    </form>
+
+    <!-- Mostrar resultados -->
+    {% if resultado %}
+        <hr>
+        <h2 class="mt-4">Mejor combinación encontrada:</h2>
+        <ul class="list-group">
+            {% for e in resultado %}
+                <li class="list-group-item">{{ e.nombre }} - Peso: {{ e.peso }}, Calorías: {{ e.calorias }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </body>
 </html>
